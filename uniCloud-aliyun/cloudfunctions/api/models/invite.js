@@ -3,20 +3,35 @@ const db = uniCloud.database();
 var invite = {
     add: async (req) => {
 		req = JSON.parse(req)
-		var inviteQuery = await db.collection('invite').where({
-			openid: req.openid,
-		}).get();
-		if(inviteQuery.affectedDocs == 0){
-			// 单条插入数据
+		if (req.adinvite){
+			// 看广告助力
 			let res = db.collection('invite').add({
 				inviteOpenid: req.inviteOpenid,
 				openid: req.openid,
 				id: req.id,
 				dateStr: new Date().toLocaleString('zh', {hour12: false, timeZone: 'Asia/Shanghai'}),
 			})
-			return res
+			return return {'status': 0, 'res': res, 'info': '广告助力'}
+		}else{
+			var inviteQuery = await db.collection('invite').where({
+				openid: req.openid,
+			}).count();
+			let inviteNum = inviteQuery.total;
+			if(inviteNum == 0){
+				// 单条插入数据
+				let res = db.collection('invite').add({
+					inviteOpenid: req.inviteOpenid,
+					openid: req.openid,
+					id: req.id,
+					dateStr: new Date().toLocaleString('zh', {hour12: false, timeZone: 'Asia/Shanghai'}),
+				})
+				return {'status': 0, 'res': res, 'info': '新用户助力'}
+			}else{
+				return {'status': 1, 'info': '非新用户', 'inviteNum': inviteNum - 1}
+			}
+			// 已助力
+			
 		}
-		return
 	},
 }
 

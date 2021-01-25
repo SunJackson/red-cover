@@ -21,12 +21,20 @@ var cover = {
 				openid: req.openid,
 				id: req.id,
 				isEnded: "true",
+				lookType: "2"
+			}).count()
+		let adLookInviteVideo = await db.collection('ad').where({
+				openid: req.openid,
+				id: req.id,
+				isEnded: "true",
+				lookType: "1"
 			}).count()
 		let invite = await db.collection('invite').where({
 				inviteOpenid: req.openid,
 				id: req.id,
 			}).count()
 		let lookVideoLockNum = adLookVideo.total
+		let lookInviteVideoLockNum = adLookInviteVideo.total
 		let inviteLockNum = invite.total
 		if(detail.data[0].isFree || ((lookVideoLockNum > 0 && lookVideoLockNum >= detail.data[0].lookVideoLockNum) || (inviteLockNum > 0 && inviteLockNum >= detail.data[0].inviteLockNum))){
 			var isLocked = true
@@ -42,6 +50,7 @@ var cover = {
 			coverDetail: detail.data[0],
 			lockEdInfo: {
 				lookVideoLockNum,
+				lookInviteVideoLockNum,
 				inviteLockNum,
 				isLocked,
 			},

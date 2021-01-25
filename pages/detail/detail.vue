@@ -5,11 +5,15 @@
 		</view>
 		<ad :unit-id="ad.two" ad-type="grid" grid-opacity="0.8" grid-count="5" ad-theme="white" v-if="ad.two"></ad>
 		<view class="func">
+			<button plain class="func-btn" bindtap="lookAd" data-type="1" v-if="coverDetail.lookinviteVideoLockNum > 0">
+				<image src="/static/share.png" mode="" class="func-btn-img"></image>
+				继续帮好友助力（{{lockEdInfo.lookInviteVideoLockNum}}/{{coverDetail.lookInviteVideoLockNum}}）
+			</button>
 			<button plain class="func-btn" open-type="share" v-if="coverDetail.inviteLockNum > 0">
 				<image src="/static/share.png" mode="" class="func-btn-img"></image>
 				邀请好友领取（{{lockEdInfo.inviteLockNum}}/{{coverDetail.inviteLockNum}}）
 			</button>
-			<button plain class="func-btn" @click="lookAd" v-if="coverDetail.lookVideoLockNum > 0">
+			<button plain class="func-btn" bindtap="lookAd" data-type="2" v-if="coverDetail.lookVideoLockNum > 0">
 				<image src="/static/video.png" mode="" class="func-btn-img"></image>
 				观看视频领取（{{lockEdInfo.lookVideoLockNum}}/{{coverDetail.lookVideoLockNum}}）
 			</button>
@@ -49,14 +53,17 @@ export default {
 			coverDetail: {
 				inviteLockNum: 0,
 				lookVideoLockNum: 0,
+				lookInviteVideoLockNum: 0,
 				getDesc: "",
 			},
 			lockEdInfo: {
 				inviteLockNum: 0,
 				lookVideoLockNum: 0,
+				lookInviteVideoLockNum: 0,
 				isLocked: false,
 			},
 			ad: '',
+			lookType: '',
 		};
 	},
 	onLoad(e) {
@@ -84,6 +91,10 @@ export default {
 			this.coverDetail = res.result.data.coverDetail
 			this.lockEdInfo = res.result.data.lockEdInfo
 			this.ad = res.result.data.ad
+			if (getApp().globalData.inviteStatus.status){
+				this.coverDetail.lookInviteVideoLockNum = getApp().globalData.inviteStatus.inviteNum * 2 - this.lockEdInfo.lookInviteVideoLockNum + 1;
+				this.lockEdInfo.lookInviteVideoLockNum = 0;
+			}
 			if(isFirst && this.ad){
 				//激励视频和插屏广告
 				if(this.ad.one){
@@ -98,7 +109,9 @@ export default {
 			}
 			uni.hideLoading()
 		},
-		lookAd() {
+		lookAd: function(e) {
+			let lookType = e.currentTarget.dataset['type'];
+			this.lookType = lookType;
 			rewardedVideoAd.show().catch(() => {
 				rewardedVideoAd
 					.load()
@@ -126,7 +139,11 @@ export default {
 				rewardedVideoAd.onClose(res => {
 					console.log('Ad onClose event emit', res);
 					if (res && res.isEnded) {
-						this.lockEdInfo.lookVideoLockNum++
+						if (this.lookType === "1"){
+							this.lockEdInfo.lookinviteVideoLockNum++
+						}else{
+							this.lockEdInfo.lookVideoLockNum++
+						}
 						console.log('正常播放结束，可以下发游戏奖励');
 					} else {
 						console.log('播放中途退出，不下发游戏奖励');
@@ -150,12 +167,13 @@ export default {
 				interstitialAd.onClose(() => {})
 			}
 		},
-		//看视频上班
+		//看视频上报
 		async trackLookVideo(isEnded){
 			await lookVideo({
 				openid: getApp().globalData.openid,
 				id: this.id,
 				isEnded,
+				lookType: this.lookType,
 			})
 		},
 		openModal(){

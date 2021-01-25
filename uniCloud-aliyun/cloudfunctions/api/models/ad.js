@@ -7,6 +7,7 @@ var ad = {
 			openid: req.openid,
 			id: req.id,
 			isEnded: req.isEnded,
+			lookType: req.lookType,
 			dateStr: new Date().toLocaleString('zh', {hour12: false, timeZone: 'Asia/Shanghai'}),
 		})
 		return res

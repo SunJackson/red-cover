@@ -9,7 +9,7 @@ export default {
 		var openid = uni.getStorageSync('openid');
 		if (openid) {
 			this.globalData.openid = openid;
-			this.inviteTrack(e.query.openid, openid, e.query.id)
+			this.globalData.inviteStatus = this.inviteTrack(e.query.openid, openid, e.query.id, false);
 		} else {
 			// 登录
 			const [loginError, loginRes] = await uni.login();
@@ -17,7 +17,7 @@ export default {
 			const res = await login({code: loginRes.code})
 			this.globalData.openid = res.result.data.user.openid;
 			uni.setStorageSync('openid', res.result.data.user.openid);
-			this.inviteTrack(e.query.openid, this.globalData.openid, e.query.id)		
+			this.globalData.inviteStatus = this.inviteTrack(e.query.openid, this.globalData.openid, e.query.id, false);
 		}
 	},
 	onShow: function() {
@@ -28,6 +28,7 @@ export default {
 	},
 	globalData: {
 		openid: '',
+		inviteStatus: '',
 	},
 	methods: {
 		shareConfig(){
@@ -40,13 +41,14 @@ export default {
 			return messages[Math.floor(Math.random()*messages.length)];
 		},
 		//邀请上报
-		inviteTrack(inviteOpenid, openid, id){
-			if(inviteOpenid && openid && inviteOpenid != openid){
+		inviteTrack(inviteOpenid, openid, id, adinvite){
+			if(inviteOpenid && openid && inviteOpenid != openid && adinvite){
 				console.log(inviteOpenid, openid)
 				inviteTrack({
 					inviteOpenid,
 					openid,
 					id,
+					adinvite,
 				})
 			}
 		},
