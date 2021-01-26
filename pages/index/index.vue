@@ -22,13 +22,14 @@
 		<view class="list">
 			<view class="list-item" v-for="(cover, i) in coverList" @click="goDetail(cover._id)" :key="i">
 				<image :src="cover.pic" mode="" class="list-item-img"></image>
+				<view class="list-item-left" v-if="cover.num > 0">{{cover.num}}人已领</view>
+				<view class="list-item-left" v-else-if="cover.num <= 0">已被领光</view>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	import { cover } from '../../request'
 	export default {
 		data() {
 			return {
@@ -39,9 +40,16 @@
 		},
 		onLoad() {
 			this.getCoverList()
+			wx.showShareMenu({
+			  withShareTicket: true,
+			  menus: ['shareAppMessage', 'shareTimeline']
+			})
 		},
 		onShareAppMessage(res) {
 			return getApp().shareConfig()
+		},
+		onShareTimeline() {
+			return getApp().shareTimelineConfig();
 		},
 		methods: {
 			goDetail(id){
@@ -49,15 +57,21 @@
 				    url: `/pages/detail/detail?id=${id}`
 				});
 			},
-			async getCoverList(){
+			getCoverList(){
 				uni.showLoading({
 					title: "获取封面中"
 				})
-				const res = await cover()
-				this.couponList = res.result.data.couponList
-				this.coverList = res.result.data.coverList
-				this.tips = res.result.data.tips
-				uni.hideLoading()
+				uni.request({
+					url: getApp().globalData.api.cover,
+					success: (res) => {
+						this.couponList = res.data.data.couponList
+						this.coverList = res.data.data.coverList
+						this.tips = res.data.data.tips
+					},
+					complete() {
+						uni.hideLoading()
+					}
+				})
 			},
 			toCoupon(i){
 				console.log(this.couponList[i])
@@ -116,6 +130,9 @@
 					&.meituan{
 						background-color: #fff2d2;
 					}
+					&.jd{
+						background-color: #ffc801;
+					}
 					&-border{
 						position: absolute;
 						top: 0;
@@ -160,12 +177,24 @@
 				box-sizing: border-box;
 				box-shadow:0px 15px 10px -15px #000;
 				margin-bottom: 20rpx;
+				justify-items: center;
 				&-img{
 					display: block;
 					margin: auto;
 					width: 220rpx;
 					height: 360rpx;
 					border-radius: 8px 8px 0 0;
+				}
+				&-left{
+					display: block;
+					width: 220rpx;
+					margin: auto;
+					background-color: #f35543;
+					color: #ffffff;
+					text-align: center;
+					font-size: 20rpx;
+					font-weight: bold;		
+					border-radius: 0 0 8px 8px;
 				}
 			}
 		}

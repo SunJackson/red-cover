@@ -11,7 +11,8 @@ var invite = {
 				id: req.id,
 				dateStr: new Date().toLocaleString('zh', {hour12: false, timeZone: 'Asia/Shanghai'}),
 			})
-			return return {'status': 0, 'res': res, 'info': '广告助力'}
+			console.log("广告助力")
+			return res
 		}else{
 			var inviteQuery = await db.collection('invite').where({
 				openid: req.openid,
@@ -25,9 +26,10 @@ var invite = {
 					id: req.id,
 					dateStr: new Date().toLocaleString('zh', {hour12: false, timeZone: 'Asia/Shanghai'}),
 				})
-				return {'status': 0, 'res': res, 'info': '新用户助力'}
+				console.log("新用户助力")
+				return res
 			}else{
-				return {'status': 1, 'info': '非新用户', 'inviteNum': inviteNum - 1}
+				return {'status': 1, 'info': '非新用户', 'inviteNum': inviteNum}
 			}
 			// 已助力
 			

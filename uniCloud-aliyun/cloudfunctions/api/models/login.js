@@ -3,11 +3,11 @@ const db = uniCloud.database();
 
 var login = async (code) => {
 	let res = await getOpenid(code)
-	console.log(res)
+	console.log('login', res)
 	var userQuery = await db.collection('user').where({
 		openid: res.data.openid,
 	}).get();
-	console.log(userQuery)
+	console.log('userQuery', userQuery)
 	if(userQuery.affectedDocs == 0){
 		var newUserQuery = await db.collection('user').add(res.data)
 		var userQuery = await db.collection('user').doc(newUserQuery.id).get()

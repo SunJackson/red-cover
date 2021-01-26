@@ -1,19 +1,31 @@
 <template>
 	<view class="wrapper">
+		<u-popup v-model="show" mode="center" width="61%" height="38%" border-radius="25" closeable=true close-icon-color="red">
+			<view class="popup">
+				<text class="popup-more-text">
+					敲黑板！
+				</text>
+				<text class="popup-more-text-desc">
+					您已经帮助过{{inviteNum}}个好友，如果想再次助力，请完成【看视频助力】任务
+				</text>
+				<image class="popup-bg" src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-aliyun-fcrle97u1myh788c20/6dd525a0-5fa5-11eb-8d54-21c4ca4ce5d7.png"></image>
+			</view>
+		</u-popup>
+	
 		<view class="cover">
 			<image :src="coverDetail.pic" mode="" class="cover-img"></image>
 		</view>
 		<ad :unit-id="ad.two" ad-type="grid" grid-opacity="0.8" grid-count="5" ad-theme="white" v-if="ad.two"></ad>
 		<view class="func">
-			<button plain class="func-btn" bindtap="lookAd" data-type="1" v-if="coverDetail.lookinviteVideoLockNum > 0">
-				<image src="/static/share.png" mode="" class="func-btn-img"></image>
-				继续帮好友助力（{{lockEdInfo.lookInviteVideoLockNum}}/{{coverDetail.lookInviteVideoLockNum}}）
+			<button plain class="func-btn" @tap="lookAd" data-type="1" v-if="lookinviteVideoLockNum > 0">
+				<image src="/static/video.png" mode="" class="func-btn-img"></image>
+				看视频助力（再看{{lookinviteVideoLockNum}}个）
 			</button>
 			<button plain class="func-btn" open-type="share" v-if="coverDetail.inviteLockNum > 0">
 				<image src="/static/share.png" mode="" class="func-btn-img"></image>
 				邀请好友领取（{{lockEdInfo.inviteLockNum}}/{{coverDetail.inviteLockNum}}）
 			</button>
-			<button plain class="func-btn" bindtap="lookAd" data-type="2" v-if="coverDetail.lookVideoLockNum > 0">
+			<button plain class="func-btn" @tap="lookAd" data-type="2" v-if="coverDetail.lookVideoLockNum > 0">
 				<image src="/static/video.png" mode="" class="func-btn-img"></image>
 				观看视频领取（{{lockEdInfo.lookVideoLockNum}}/{{coverDetail.lookVideoLockNum}}）
 			</button>
@@ -21,7 +33,7 @@
 				领取封面
 			</button>
 		</view>
-		<view class="recommand">更多封面👇👇👇</view>
+		<view class="recommand"  v-if="modalShow">更多封面👇👇👇</view>
 		<ad-custom :unit-id="ad.three" v-if="ad.three"></ad-custom>
 		<ad :unit-id="ad.four" ad-type="video" ad-theme="white" v-if="ad.four"></ad>
 		<view class="modal" @touchmove.stop="handle" @click="closeModal" v-if="modalShow">
@@ -31,6 +43,7 @@
 						领取方式
 					</view>
 					<text user-select decode class="modal-content-body-getdesc">{{coverDetail.getDesc}}</text>
+					<text user-select decode class="modal-content-body-getdesc">{{id}}\n{{openid}}</text>
 					<button plain class="modal-content-body-question" open-type="contact">有疑问？</button>
 				</view>
 				<image src="/static/close.png" mode="" class="modal-content-cancel" @click.stop="closeModal"></image>
@@ -41,7 +54,6 @@
 
 <script>
 import { coverDetail, lookVideo } from '../../request';
-
 var rewardedVideoAd = null
 // 在页面中定义插屏广告
 var interstitialAd = null
@@ -53,7 +65,6 @@ export default {
 			coverDetail: {
 				inviteLockNum: 0,
 				lookVideoLockNum: 0,
-				lookInviteVideoLockNum: 0,
 				getDesc: "",
 			},
 			lockEdInfo: {
@@ -64,11 +75,20 @@ export default {
 			},
 			ad: '',
 			lookType: '',
+			lookinviteVideoLockNum: 0,
+			inviteNum: 0,
+			openid: '',
+			show: false
 		};
 	},
 	onLoad(e) {
 		this.id = e.id
+		this.openid = getApp().globalData.openid
 		this.getCoverDetail(true)
+		wx.showShareMenu({
+		  withShareTicket: true,
+		  menus: ['shareAppMessage', 'shareTimeline']
+		})
 	},
 	onShow(e) {
 		this.getCoverDetail(false)
@@ -76,8 +96,16 @@ export default {
 	onShareAppMessage(res) {
 		var shareConfig = getApp().shareConfig()
 		shareConfig.path += '&id='+this.id
+		shareConfig.imageUrl = this.coverDetail.pic
 		console.log(shareConfig)
 		return shareConfig
+	},
+	onShareTimeline() {
+		var shareConfig = getApp().shareTimelineConfig()
+		shareConfig.query += '&id='+this.id
+		shareConfig.imageUrl = this.coverDetail.pic
+		console.log(shareConfig)
+		return shareConfig;
 	},
 	methods: {
 		handle(){
@@ -88,13 +116,21 @@ export default {
 				id: this.id,
 				openid: getApp().globalData.openid,
 			})
+			console.log(res.result)
 			this.coverDetail = res.result.data.coverDetail
 			this.lockEdInfo = res.result.data.lockEdInfo
 			this.ad = res.result.data.ad
-			if (getApp().globalData.inviteStatus.status){
-				this.coverDetail.lookInviteVideoLockNum = getApp().globalData.inviteStatus.inviteNum * 2 - this.lockEdInfo.lookInviteVideoLockNum + 1;
-				this.lockEdInfo.lookInviteVideoLockNum = 0;
+			console.log('inviteStatus', getApp().globalData.inviteStatus)
+			if (getApp().globalData.inviteStatus && getApp().globalData.inviteStatus.status == 1){
+				this.lookinviteVideoLockNum = getApp().globalData.inviteStatus.inviteNum * 2 - this.lockEdInfo.lookInviteVideoLockNum - 1;
+				this.inviteNum = getApp().globalData.inviteStatus.inviteNum
+				if (this.lookinviteVideoLockNum > 0 && isFirst){
+					this.show = true
+				}
+			}else{
+				this.lookInviteVideoLockNum = 0;
 			}
+			console.log('this.coverDetail', this.coverDetail)
 			if(isFirst && this.ad){
 				//激励视频和插屏广告
 				if(this.ad.one){
@@ -104,13 +140,14 @@ export default {
 					this.adInit(this.ad.five);
 				}
 			}
-			if(this.lockEdInfo.isLocked){
+			if(this.lockEdInfo.isLocked && isFirst){
 				this.modalShow = true
 			}
 			uni.hideLoading()
 		},
-		lookAd: function(e) {
-			let lookType = e.currentTarget.dataset['type'];
+		lookAd: function(event) {
+			console.log('观看广告', event)
+			let lookType = event.currentTarget.dataset['type'];
 			this.lookType = lookType;
 			rewardedVideoAd.show().catch(() => {
 				rewardedVideoAd
@@ -141,6 +178,14 @@ export default {
 					if (res && res.isEnded) {
 						if (this.lookType === "1"){
 							this.lockEdInfo.lookinviteVideoLockNum++
+							if (this.lockEdInfo.lookinviteVideoLockNum == this.lookInviteVideoLockNum){
+								uni.showToast({
+									title: '助力成功',
+									icon: 'success',
+									duration: 2000
+								});
+								getApp().inviteTrack(getApp().globalData.inviteOpenid, getApp().globalData.openid, this.id, true);
+							}
 						}else{
 							this.lockEdInfo.lookVideoLockNum++
 						}
@@ -172,7 +217,7 @@ export default {
 			await lookVideo({
 				openid: getApp().globalData.openid,
 				id: this.id,
-				isEnded,
+				isEnded: isEnded,
 				lookType: this.lookType,
 			})
 		},
@@ -289,5 +334,42 @@ export default {
 		}
 		
 	}
+}
+.popup-bg{
+   background-color: #ffffff;
+   position: absolute;
+   top:0;
+   left:0;
+   width:100%;
+   height:100%;
+   z-index:-1;
+   padding: 0;
+   margin: 0;
+}
+.popup {
+	border-radius: 40rpx; 
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+}
+.popup-more-text {
+    width: 61%;
+    height: 40px;
+	
+	font-size: 40rpx;
+	font-weight: bold;
+	text-align: center;
+
+}
+.popup-more-text-desc {
+    width: 90%;
+    height: 40px;
+	font-size: 30rpx;
+	font-weight: bold;
+	text-align: center;
+
 }
 </style>
