@@ -11,10 +11,10 @@ export default {
 		console.log(e)
 		console.log('App Launch');
 		var openid = uni.getStorageSync('openid');
+		this.globalData.inviteOpenid = e.query.openid;
 		if (openid) {
 			console.log('获取到本地openid')
 			this.globalData.openid = openid;
-			this.globalData.inviteOpenid = e.query.openid;
 			this.inviteTrack(e.query.openid, openid, e.query.id, false);
 		} else {
 			// 登录
@@ -22,13 +22,13 @@ export default {
 			const [loginError, loginRes] = await uni.login();
 			console.log(loginError, loginRes)
 			// 发送 res.code 到后台换取 openId, sessionKey, unionId
-			if (!loginError){
+			if (loginRes && loginRes.code){
 				const res = await login({code: loginRes.code})
 				this.globalData.openid = res.result.data.user.openid;
 				uni.setStorageSync('openid', res.result.data.user.openid);
 				this.inviteTrack(e.query.openid, this.globalData.openid, e.query.id, false);
 			}else{
-				
+				console.log('登录失败')
 			}
 		}
 		

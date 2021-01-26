@@ -43,7 +43,7 @@
 						领取方式
 					</view>
 					<text user-select decode class="modal-content-body-getdesc">{{coverDetail.getDesc}}</text>
-					<text user-select decode class="modal-content-body-getdesc">{{id}}\n{{openid}}</text>
+					<text user-select decode class="modal-content-body-getdesc">\n{{id}}\n{{openid}}</text>
 					<button plain class="modal-content-body-question" open-type="contact">有疑问？</button>
 				</view>
 				<image src="/static/close.png" mode="" class="modal-content-cancel" @click.stop="closeModal"></image>
