@@ -2,7 +2,7 @@ const db = uniCloud.database();
 
 var cover = {
     list: async () => {
-		let list = await db.collection('cover').get();
+		let list = await db.collection('cover').orderBy("num", "desc").get();
 		return list.data
 	},
 	coupons: async () => {
