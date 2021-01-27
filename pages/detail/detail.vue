@@ -90,7 +90,11 @@ export default {
 	onLoad(e) {
 		this.id = e.id
 		this.num = parseInt(e.num)
-		this.openid = getApp().globalData.openid
+		if (e.openid){
+			this.openid = e.openid
+		}else{
+			this.openid = getApp().globalData.openid
+		}
 		this.getCoverDetail(true)
 		wx.showShareMenu({
 		  withShareTicket: true,
@@ -103,7 +107,7 @@ export default {
 	onShareAppMessage(res) {
 		let shareConfig = {
 			title: '送你个性微信红包封面，发红包时可用',
-			path: `/pages/detail/detail?openid=${openid}&id=${id}`,
+			path: '/pages/detail/detail?openid='+ this.openid + '&id=' + this.id + '&num=' + this.num,
 			imageUrl: this.coverDetail.pic
 		}
 		return shareConfig
@@ -111,7 +115,8 @@ export default {
 	onShareTimeline() {
 		let shareConfig = {
 			title: '送你个性微信红包封面，发红包时可用',
-			query: `openid=${openid}&id=${id}`,
+			path: '/pages/detail/detail',
+			query: 'openid='+ this.openid + '&id=' + this.id + '&num=' + this.num,
 			imageUrl: this.coverDetail.pic
 		}
 		return shareConfig
