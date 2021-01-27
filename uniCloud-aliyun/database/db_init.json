@@ -29,7 +29,20 @@
                         "look": ""
                     }
                 }
-            }
+            },
+			{
+			    "name": "ad-线上",
+			    "value": {
+			        "detail": {
+			            "one": "adunit-ceea1477dcb9a00b",
+			            "two": "adunit-66ae7433dfdb446c",
+			            "three": "adunit-979dc6d8d31765fc",
+			            "four": "adunit-e160b5205ae2e825",
+			            "five": "adunit-06365d609a7df2f2",
+			            "look": ""
+			        }
+			    }
+			}
         ]
     },
     "coupon": {

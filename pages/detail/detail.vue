@@ -6,7 +6,7 @@
 					敲黑板！
 				</text>
 				<text class="popup-more-text-desc">
-					您已经帮助过{{inviteNum}}个好友，如果想再次助力，请完成【看视频助力】任务
+					您已经帮助过朋友{{inviteNum}}次，如果想再次帮助，请完成【看视频助力】任务
 				</text>
 				<image class="popup-bg" src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-aliyun-fcrle97u1myh788c20/6dd525a0-5fa5-11eb-8d54-21c4ca4ce5d7.png"></image>
 			</view>
@@ -16,10 +16,10 @@
 			<image :src="coverDetail.pic" mode="" class="cover-img"></image>
 		</view>
 		<ad :unit-id="ad.two" ad-type="grid" grid-opacity="0.8" grid-count="5" ad-theme="white" v-if="ad.two"></ad>
-		<view class="func">
-			<button plain class="func-btn" @tap="lookAd" data-type="1" v-if="lookinviteVideoLockNum > 0">
+		<view class="func" v-if="num > 0">
+			<button plain class="func-btn" @tap="lookAd" data-type="1" v-if="lookInviteVideoLockNum > 0 && ad">
 				<image src="/static/video.png" mode="" class="func-btn-img"></image>
-				看视频助力（再看{{lookinviteVideoLockNum}}个）
+				看视频助力（再看{{lookInviteVideoLockNum}}个）
 			</button>
 			<button plain class="func-btn" open-type="share" v-if="coverDetail.inviteLockNum > 0">
 				<image src="/static/share.png" mode="" class="func-btn-img"></image>
@@ -31,6 +31,11 @@
 			</button>
 			<button plain class="func-btn success" @click="openModal" v-if="lockEdInfo.isLocked">
 				领取封面
+			</button>
+		</view>
+		<view class="func" v-if="num <= 0">
+			<button plain class="func-btn error">
+				该封面已被领完
 			</button>
 		</view>
 		<view class="recommand"  v-if="modalShow">更多封面👇👇👇</view>
@@ -61,6 +66,7 @@ export default {
 	data() {
 		return {
 			id: '',
+			num: 0,
 			modalShow: '',
 			coverDetail: {
 				inviteLockNum: 0,
@@ -75,7 +81,7 @@ export default {
 			},
 			ad: '',
 			lookType: '',
-			lookinviteVideoLockNum: 0,
+			lookInviteVideoLockNum: 0,
 			inviteNum: 0,
 			openid: '',
 			show: false
@@ -83,6 +89,7 @@ export default {
 	},
 	onLoad(e) {
 		this.id = e.id
+		this.num = parseInt(e.num)
 		this.openid = getApp().globalData.openid
 		this.getCoverDetail(true)
 		wx.showShareMenu({
@@ -122,9 +129,9 @@ export default {
 			this.ad = res.result.data.ad
 			console.log('inviteStatus', getApp().globalData.inviteStatus)
 			if (getApp().globalData.inviteStatus && getApp().globalData.inviteStatus.status == 1){
-				this.lookinviteVideoLockNum = getApp().globalData.inviteStatus.inviteNum * 2 - this.lockEdInfo.lookInviteVideoLockNum - 1;
+				this.lookInviteVideoLockNum = getApp().globalData.inviteStatus.inviteNum * 2 - this.lockEdInfo.lookInviteVideoLockNum - 1;
 				this.inviteNum = getApp().globalData.inviteStatus.inviteNum
-				if (this.lookinviteVideoLockNum > 0 && isFirst){
+				if (this.lookInviteVideoLockNum > 0 && isFirst && this.ad){
 					this.show = true
 				}
 			}else{
@@ -133,7 +140,7 @@ export default {
 			console.log('this.coverDetail', this.coverDetail)
 			if(isFirst && this.ad){
 				//激励视频和插屏广告
-				if(this.ad.one){
+				if(this.ad.one && !this.lookInviteVideoLockNum){
 					this.adinsertInit(this.ad.one)
 				}
 				if(this.ad.five){
@@ -175,10 +182,12 @@ export default {
 				});
 				rewardedVideoAd.onClose(res => {
 					console.log('Ad onClose event emit', res);
+					console.log('观看广告类型', this.lookType)
 					if (res && res.isEnded) {
 						if (this.lookType === "1"){
-							this.lockEdInfo.lookinviteVideoLockNum++
-							if (this.lockEdInfo.lookinviteVideoLockNum == this.lookInviteVideoLockNum){
+							this.lookInviteVideoLockNum--
+							console.log('还需观看广告数', this.lookInviteVideoLockNum)
+							if (this.lookInviteVideoLockNum == 0){
 								uni.showToast({
 									title: '助力成功',
 									icon: 'success',
@@ -268,6 +277,10 @@ export default {
 			font-weight: 700;
 			&.success{
 				background-color: #07c160;
+				color: #FFFFFF;
+			}
+			&.error{
+				background-color: #9a9a9a;
 				color: #FFFFFF;
 			}
 			&-img {
