@@ -101,18 +101,20 @@ export default {
 		this.getCoverDetail(false)
 	},
 	onShareAppMessage(res) {
-		var shareConfig = getApp().shareConfig()
-		shareConfig.path += '&id='+this.id
-		shareConfig.imageUrl = this.coverDetail.pic
-		console.log(shareConfig)
+		let shareConfig = {
+			title: '送你个性微信红包封面，发红包时可用',
+			path: `/pages/detail/detail?openid=${openid}&id=${id}`,
+			imageUrl: this.coverDetail.pic
+		}
 		return shareConfig
 	},
 	onShareTimeline() {
-		var shareConfig = getApp().shareTimelineConfig()
-		shareConfig.query += '&id='+this.id
-		shareConfig.imageUrl = this.coverDetail.pic
-		console.log(shareConfig)
-		return shareConfig;
+		let shareConfig = {
+			title: '送你个性微信红包封面，发红包时可用',
+			query: `openid=${openid}&id=${id}`,
+			imageUrl: this.coverDetail.pic
+		}
+		return shareConfig
 	},
 	methods: {
 		handle(){
