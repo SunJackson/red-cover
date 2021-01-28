@@ -49,6 +49,7 @@ var cover = {
 					id: req.id,
 					status: 0,
 					dateStr: new Date().toLocaleString('zh', {hour12: false, timeZone: 'Asia/Shanghai'}),
+					sendDate: ""
 				})
 				console.log('可以领取，插入成功')
 			}

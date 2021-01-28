@@ -53,6 +53,11 @@ exports.main = async (event, context) => {
 			resp = recordProvide
 			return response.success(resp)
 			break;
+		case '/wechat/getcode':
+			var recordSendCover = await wechatModel.recordSendCover(event.queryStringParameters)
+			resp = recordSendCover
+			return response.success(resp)
+			break;
 		default:
 
 	}
