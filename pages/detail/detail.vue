@@ -34,21 +34,34 @@
 			</button>
 		</view>
 		<view class="func" v-if="num <= 0">
+			<button plain class="func-btn error" v-if="coverDetail.inviteLockNum > 0">
+				<image src="/static/share.png" mode="" class="func-btn-img"></image>
+				邀请好友情况（{{lockEdInfo.inviteLockNum}}/{{coverDetail.inviteLockNum}}）
+			</button>
+			<button plain class="func-btn error" v-if="coverDetail.lookVideoLockNum > 0">
+				<image src="/static/video.png" mode="" class="func-btn-img"></image>
+				观看视频情况（{{lockEdInfo.lookVideoLockNum}}/{{coverDetail.lookVideoLockNum}}）
+			</button>
 			<button plain class="func-btn error">
-				该封面已被领完
+				抱歉，该封面已被领完
 			</button>
 		</view>
 		<view class="recommand"  v-if="modalShow">更多封面👇👇👇</view>
 		<ad-custom :unit-id="ad.three" v-if="ad.three"></ad-custom>
 		<ad :unit-id="ad.four" ad-type="video" ad-theme="white" v-if="ad.four"></ad>
-		<view class="modal" @touchmove.stop="handle" @click="closeModal" v-if="modalShow">
+		<view class="modal func" @touchmove.stop="handle" @click="closeModal" v-if="modalShow">
 			<view class="modal-content" @click.stop="openModal">
 				<view class="modal-content-body">
 					<view class="modal-content-body-title">
 						领取方式
 					</view>
 					<text user-select decode class="modal-content-body-getdesc">{{coverDetail.getDesc}}</text>
-					<text user-select decode class="modal-content-body-getdesc">\n{{id}}\n{{openid}}</text>
+					<button plain class="modal-content-body-copy success" @click="copyCode" v-if="lockEdInfo.isLocked">
+						复制代码
+					</button>
+					<button plain class="modal-content-body-copy success" @click="linkOthers" v-if="lockEdInfo.isLocked">
+						前往公众号
+					</button>
 					<button plain class="modal-content-body-question" open-type="contact">有疑问？</button>
 				</view>
 				<image src="/static/close.png" mode="" class="modal-content-cancel" @click.stop="closeModal"></image>
@@ -66,7 +79,7 @@ export default {
 	data() {
 		return {
 			id: '',
-			num: 0,
+			num: 1,
 			modalShow: '',
 			coverDetail: {
 				inviteLockNum: 0,
@@ -89,7 +102,6 @@ export default {
 	},
 	onLoad(e) {
 		this.id = e.id
-		this.num = parseInt(e.num)
 		if (e.openid){
 			this.openid = e.openid
 		}else{
@@ -107,7 +119,7 @@ export default {
 	onShareAppMessage(res) {
 		let shareConfig = {
 			title: '送你个性微信红包封面，发红包时可用',
-			path: '/pages/detail/detail?openid='+ this.openid + '&id=' + this.id + '&num=' + this.num,
+			path: '/pages/detail/detail?openid='+ this.openid + '&id=' + this.id,
 			imageUrl: this.coverDetail.pic
 		}
 		return shareConfig
@@ -116,12 +128,20 @@ export default {
 		let shareConfig = {
 			title: '送你个性微信红包封面，发红包时可用',
 			path: '/pages/detail/detail',
-			query: 'openid='+ this.openid + '&id=' + this.id + '&num=' + this.num,
+			query: 'openid='+ this.openid + '&id=' + this.id,
 			imageUrl: this.coverDetail.pic
 		}
 		return shareConfig
 	},
 	methods: {
+		linkOthers(){
+			// 此处填写你要跳转的绑定公众号文章的链接地址或者已经在小程序后台配置好业务域名的地址
+			var url = "https://mp.weixin.qq.com/s?__biz=MzU3MzY0OTAwNQ==&mid=2247484014&idx=1&sn=98969bf1a25f3ced92150e39e83d80bc&chksm=fd3f3b6cca48b27a00fafc3335ccbb9a52949b16a6ecbec177cfe1e31f14b7a2058ce166b339&token=1026867263&lang=zh_CN#rd"
+			uni.navigateTo({
+				// 此处的链接为小程序上面新建的webview页面路径，参数url为要跳转外链的地址
+				url:"/pages/linkOthers/linkOthers?url=" + encodeURIComponent(url)
+			});
+		},
 		handle(){
 			return
 		},
@@ -133,6 +153,7 @@ export default {
 			console.log(res.result)
 			this.coverDetail = res.result.data.coverDetail
 			this.lockEdInfo = res.result.data.lockEdInfo
+			this.num = res.result.data.coverDetail.num
 			this.ad = res.result.data.ad
 			console.log('inviteStatus', getApp().globalData.inviteStatus)
 			if (getApp().globalData.inviteStatus && getApp().globalData.inviteStatus.status == 1){
@@ -145,19 +166,45 @@ export default {
 				this.lookInviteVideoLockNum = 0;
 			}
 			console.log('this.coverDetail', this.coverDetail)
-			if(isFirst && this.ad){
-				//激励视频和插屏广告
-				if(this.ad.one && !this.lookInviteVideoLockNum){
-					this.adinsertInit(this.ad.one)
+			try{
+				if(isFirst && this.ad){
+					//激励视频和插屏广告
+					if(this.ad.one && !this.lookInviteVideoLockNum && !this.lockEdInfo.isLocked){
+						
+						this.adinsertInit(this.ad.one)
+					}
+					if(this.ad.five){
+						this.adInit(this.ad.five);
+					}
 				}
-				if(this.ad.five){
-					this.adInit(this.ad.five);
-				}
+			} catch (error) {
+				console.log('广告初始化出错',error)
 			}
-			if(this.lockEdInfo.isLocked && isFirst){
+			if(this.lockEdInfo.isLocked && isFirst && this.num > 0){
 				this.modalShow = true
 			}
 			uni.hideLoading()
+		},
+		copyCode(){
+			console.log('复制剪切板')
+			const _this = this;
+			uni.setClipboardData({
+				data: '元气封面领取码\n' + this.id + '\n' + this.openid,
+				success: function() {
+					uni.showToast({
+					    title: '获取成功',
+						icon: 'success',
+					    duration: 4000
+					});
+				},
+				fail: function(err) {
+					uni.showToast({
+					    title: '获取失败',
+						icon: 'none',
+					    duration: 2000
+					});
+				}
+			});
 		},
 		lookAd: function(event) {
 			console.log('观看广告', event)
@@ -230,6 +277,7 @@ export default {
 		},
 		//看视频上报
 		async trackLookVideo(isEnded){
+			console.log('看视频上报')
 			await lookVideo({
 				openid: getApp().globalData.openid,
 				id: this.id,
@@ -342,6 +390,25 @@ export default {
 					font-size: 28rpx;
 					color: #576b95;
 					margin-top: 30rpx;
+				}
+				&-copy{
+					margin: auto;
+					display: block;
+					border: none;
+					padding: 0 40rpx;
+					height: 90rpx;
+					width: 50%;
+					align-items: center;
+					justify-content: center;
+					background-color: #fbd926;
+					border-radius: 90rpx;
+					margin-top: 30rpx;
+					font-size: 34rpx;
+					font-weight: 700;
+					&.success{
+						background-color: #07c160;
+						color: #FFFFFF;
+					}
 				}
 			}
 			&-cancel{

@@ -7,7 +7,7 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				
+				"navigationBarTitleText": "元气封面"
 			}
 		}, {
 			"path": "pages/user/user",
@@ -22,6 +22,15 @@
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "封面详情",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/linkOthers/linkOthers",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "公众号",
                 "enablePullDownRefresh": false
             }
             

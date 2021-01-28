@@ -4,6 +4,7 @@ const coverModel = require('./models/cover')
 const loginModel = require('./models/login')
 const adModel = require('./models/ad')
 const inviteModel = require('./models/invite')
+const wechatModel = require('./models/wechat')
 
 exports.main = async (event, context) => {
 	//event为客户端上传的参数
@@ -40,6 +41,16 @@ exports.main = async (event, context) => {
 		case '/invite/track':
 			var inviteAdd = await inviteModel.add(event.body)
 			resp = inviteAdd
+			return response.success(resp)
+			break;
+		case '/wechat/search':
+			var recordSearch = await wechatModel.recordSearch(event.queryStringParameters)
+			resp = recordSearch
+			return response.success(resp)
+			break;
+		case '/wechat/provide':
+			var recordProvide = await wechatModel.recordProvide(event.queryStringParameters)
+			resp = recordProvide
 			return response.success(resp)
 			break;
 		default:

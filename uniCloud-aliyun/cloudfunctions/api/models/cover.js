@@ -20,13 +20,13 @@ var cover = {
 		let adLookVideo = await db.collection('ad').where({
 				openid: req.openid,
 				id: req.id,
-				isEnded: "true",
+				isEnded: true,
 				lookType: "2"
 			}).count()
 		let adLookInviteVideo = await db.collection('ad').where({
 				openid: req.openid,
 				id: req.id,
-				isEnded: "true",
+				isEnded: true,
 				lookType: "1"
 			}).count()
 		let invite = await db.collection('invite').where({
@@ -38,6 +38,21 @@ var cover = {
 		let inviteLockNum = invite.total
 		if(detail.data[0].isFree || ((lookVideoLockNum > 0 && lookVideoLockNum >= detail.data[0].lookVideoLockNum) || (inviteLockNum > 0 && inviteLockNum >= detail.data[0].inviteLockNum))){
 			var isLocked = true
+			var recordQuery = await db.collection('record').where({
+				_id: req.id + req.openid,
+			}).count();
+			let recordNum = recordQuery.total;
+			if (recordNum == 0){
+				var res = await db.collection('record').add({
+					_id: req.id + req.openid,
+					openid: req.openid,
+					id: req.id,
+					status: 0,
+					dateStr: new Date().toLocaleString('zh', {hour12: false, timeZone: 'Asia/Shanghai'}),
+				})
+				console.log('可以领取，插入成功')
+			}
+			
 		}else{
 			var isLocked = false
 		}

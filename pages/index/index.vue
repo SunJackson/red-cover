@@ -23,7 +23,7 @@
 			<view class="list-item" v-for="(cover, i) in coverList" @click="goDetail(cover._id, cover.num)" :key="i">
 				<image :src="cover.pic" mode="" class="list-item-img"></image>
 				<view class="list-item-left" v-if="cover.num > 0">{{cover.num}}人已领</view>
-				<view class="list-item-left" v-else-if="cover.num <= 0">已被领光</view>
+				<view class="list-item-left" v-else-if="cover.num <= 0">点击查看</view>
 			</view>
 		</view>
 	</view>
