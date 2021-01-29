@@ -180,7 +180,7 @@ export default {
 			} catch (error) {
 				console.log('广告初始化出错',error)
 			}
-			if(this.lockEdInfo.isLocked && isFirst && this.num > 0){
+			if(this.lockEdInfo.isLocked && this.num > 0){
 				this.modalShow = true
 			}
 			uni.hideLoading()
