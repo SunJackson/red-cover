@@ -176,22 +176,16 @@
 				display: relative;
 				width: 240rpx;
 				box-sizing: border-box;
-				box-shadow:0px 15px 10px -15px #000;
-				justify-items: center;
 				&-img{
-					margin: auto;
 					width: 220rpx;
 					height: 360rpx;
-					border-radius: 8px 8px 0 0;
+					border-radius: 8px 8px 8px 8px;
 				}
 				&-left{
 					position: relative;
 					width: 220rpx;
 					height: 40rpx;
-					margin: auto;
-					top: -8%;
-					right: 4%;
-					background-color: #f35543;
+					top: -10%;
 					color: #ffffff;
 					text-align: center;
 					font-size: 20rpx;
