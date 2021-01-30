@@ -54,6 +54,7 @@ var cover = {
 				console.log('可以领取，插入成功')
 				var updateCover = await db.collection('cover').doc(req.id).update({
 					num: db.command.inc(-1),
+					sendnum: db.command.inc(1),
 				})
 				console.log('可以领取，更新红包数量成功')
 			}
