@@ -44,7 +44,7 @@ var cover = {
 		let inviteLockNum = invite.total
 		detail.data[0].lookVideoLockNum = detail.data[0].lookVideoLockNum + recordSendNum*3
 		
-		if(detail.data[0].isFree || ((lookVideoLockNum > 0 && lookVideoLockNum >= detail.data[0].lookVideoLockNum) || (inviteLockNum > 0 && inviteLockNum >= detail.data[0].inviteLockNum))){
+		if(detail.data[0].isFree || ((lookVideoLockNum > 0 && lookVideoLockNum >= detail.data[0].lookVideoLockNum) && (inviteLockNum > 0 && inviteLockNum >= detail.data[0].inviteLockNum))){
 			var isLocked = true
 			var recordQuery = await db.collection('record').where({
 				_id: req.id + req.openid,
