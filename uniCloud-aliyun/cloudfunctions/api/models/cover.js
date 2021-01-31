@@ -33,9 +33,17 @@ var cover = {
 				inviteOpenid: req.openid,
 				id: req.id,
 			}).count()
+			
+		let record = await db.collection('record').where({
+			openid: req.openid,
+			id: db.command.neq(req.id)
+		}).count();
+		let recordSendNum = record.total
 		let lookVideoLockNum = adLookVideo.total
 		let lookInviteVideoLockNum = adLookInviteVideo.total
 		let inviteLockNum = invite.total
+		detail.data[0].lookVideoLockNum = detail.data[0].lookVideoLockNum + recordSendNum*3
+		
 		if(detail.data[0].isFree || ((lookVideoLockNum > 0 && lookVideoLockNum >= detail.data[0].lookVideoLockNum) || (inviteLockNum > 0 && inviteLockNum >= detail.data[0].inviteLockNum))){
 			var isLocked = true
 			var recordQuery = await db.collection('record').where({
