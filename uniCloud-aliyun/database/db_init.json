@@ -29,11 +29,50 @@
                     "答***(#`O′) 已成功领取一款红包封面",
                     "哼***哼 已成功领取一款红包封面"
                 ]
+            },
+            {
+                "name": "ad",
+                "value": {
+                    "detail": {
+                        "one": "adunit-ceea1477dcb9a00b",
+                        "two": "adunit-66ae7433dfdb446c",
+                        "three": "adunit-979dc6d8d31765fc",
+                        "four": "adunit-e160b5205ae2e825",
+                        "five": "adunit-06365d609a7df2f2",
+                        "look": ""
+                    }
+                }
             }
         ]
     },
     "coupon": {
         "data": [
+            {
+                "border": "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-aliyun-3fghygksin4v59ee5a/616cd130-548f-11eb-8ff1-d5dcf8779628.png",
+                "desc": "最高48元",
+                "icon": "http://tb1.bdstatic.com/tb/r/image/2017-03-03/795fda7b64093fce5e5ed440d325a48f.jpeg",
+                "minapp": {
+                    "appid": "wx2c348cf579062e56",
+                    "path": "outer_packages/r2xinvite/coupon/coupon?inviteCode=NnOIp-QOs8SiYF1dcSlL5r8phPrCf6qkH7evMyjIoup2NXxNCLYcBbd3bqpv2X2It4Fp8SyjX4vMx8up8kOVW0xCPwjoXU7XGcP4Lq1dkR5hoILQ-YCsQHahjErsyVtz5yd8LnmfrBsh9EKQv_PZ-URN2vgnWarzJYx-1l9mOnk"
+                },
+                "name": "美团外卖红包",
+                "platform": "meituan",
+                "sort": 99,
+                "tip": "每日可领"
+            },
+            {
+                "border": "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-aliyun-3fghygksin4v59ee5a/616cd130-548f-11eb-8ff1-d5dcf8779628.png",
+                "desc": "最高66元",
+                "icon": "http://5b0988e595225.cdn.sohucs.com/images/20190123/d9dbc7295ee84f1dab526426690149f2.jpeg",
+                "minapp": {
+                    "appid": "wxece3a9a4c82f58c9",
+                    "path": "ele-recommend-price/pages/guest/index?inviterId=70bee0b1"
+                },
+                "name": "饿了么红包",
+                "platform": "ele",
+                "sort": 98,
+                "tip": "每日可领"
+            },
             {
                 "border": "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-aliyun-3fghygksin4v59ee5a/616cd130-548f-11eb-8ff1-d5dcf8779628.png",
                 "desc": "最高56元",
@@ -46,19 +85,32 @@
                 "platform": "ele",
                 "sort": 100,
                 "tip": "每日可领"
+            },
+            {
+                "border": "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-aliyun-3fghygksin4v59ee5a/616cd130-548f-11eb-8ff1-d5dcf8779628.png",
+                "desc": "最高66元",
+                "icon": "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-aliyun-fcrle97u1myh788c20/bf78c4b0-6082-11eb-8d54-21c4ca4ce5d7.png",
+                "minapp": {
+                    "appid": "wxca1fe42a16552094",
+                    "path": "pages/events/money_treasure/aggre/index?_i_a=468958&a=undefined&_u_n=%E4%BA%AC%E4%B8%9C%E7%94%A8%E6%88%B7&_s_p=77AF07479631602E04A1876E43B1ACF6&activeId=468958&_m_h=https%253A%252F%252Fimg11.360buyimg.com%252Fjdphoto%252Fs120x120_jfs%252Ft1%252F82031%252F9%252F5133%252F19337%252F5d36bcadE9cdb240c%252Fccc58f73b721ec2d.png"
+                },
+                "name": "京喜一分购",
+                "platform": "jd",
+                "sort": 97,
+                "tip": "新人可领"
             }
         ]
     },
     "cover": {
         "data": [
             {
-                "getDesc": "1.点击复制\n2.前往公众号：猿起缘落\n3.发送即可领取【升职封面】",
+                "getDesc": "1.点击复制\n2.前往公众号：猿起缘落\n3.发送即可领取【加薪封面】",
                 "inviteLockNum": 40,
                 "isFree": false,
                 "lookVideoLockNum": 15,
                 "num": 0,
-                "pic": "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-aliyun-fcrle97u1myh788c20/c1a56680-6073-11eb-a16f-5b3e54966275.png",
-                "sendnum": 2653,
+                "pic": "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-aliyun-fcrle97u1myh788c20/c0d7b640-6073-11eb-b680-7980c8a877b8.png",
+                "sendnum": 0,
                 "sort": 0
             }
         ]
@@ -70,6 +122,36 @@
                 "openid": "o1DvQ4r1OpRPE_BBJcf1hgjDkrnk",
                 "id": "600f75d66cb4fb00010575c0",
                 "dateStr": "2021-1-26 17:34:29"
+            }
+        ],
+        "index": [
+            {
+                "IndexName": "inviteOpenid",
+                "MgoKeySchema": {
+                    "MgoIndexKeys": [
+                        {
+                            "Name": "inviteOpenid",
+                            "Direction": "1"
+                        },
+                        {
+                            "Name": "id",
+                            "Direction": "1"
+                        }
+                    ],
+                    "MgoIsUnique": false
+                }
+            },
+            {
+                "IndexName": "openid",
+                "MgoKeySchema": {
+                    "MgoIndexKeys": [
+                        {
+                            "Name": "openid",
+                            "Direction": "1"
+                        }
+                    ],
+                    "MgoIsUnique": false
+                }
             }
         ]
     },
@@ -88,17 +170,32 @@
         "data": [
             {
                 "coverid": "60127464665c3900012bd9ff",
-                "value": "y22b0D30r8H",
+                "value": "kXMogYQaX4I",
                 "status": 1,
-                "sendDate": "2021-1-28 20:57:51"
+                "sendDate": ""
             }
         ]
     },
     "user": {
         "data": [
             {
-                "openid": "o1DvQ4r1OpRPE_BBJcf1hgjDkrnk",
-                "session_key": "dIp3AGg2Sp7PLCAJDTfWew=="
+                "openid": "o1DvQ4ouJ43uxvJBkScmAtuncuFA",
+                "session_key": "p8f1d9hMAhvIMBrAytQf+g=="
+            }
+        ],
+        "index": [
+            {
+                "IndexName": "userid",
+                "MgoKeySchema": {
+                    "MgoIndexKeys": [
+                        {
+                            "Name": "openid",
+                            "Direction": "1"
+                        }
+                    ],
+                    "MgoIsUnique": true,
+                    "MgoIsSparse": true
+                }
             }
         ]
     }
